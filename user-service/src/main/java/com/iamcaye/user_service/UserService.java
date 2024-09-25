@@ -16,6 +16,7 @@ import com.iamcaye.user_service.repositories.UserRepository;
 public class UserService {
     final UserRepository userRepository;
     final UserCredentialsRepository userCredentialsRepository;
+    final static BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(10);
 
     public UserService (
         UserRepository userRepository,
@@ -31,7 +32,6 @@ public class UserService {
     }
 
     public Boolean saveLocalCredentials (User user, String password) {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(10);
         UserCredentials credentials = new UserCredentials(null, user.getId(), LoginProvider.LOCAL.ordinal(), encoder.encode(password));
         
         return this.userCredentialsRepository.save(credentials) != null;
@@ -39,5 +39,17 @@ public class UserService {
 
     public List<User> getUsers() {
         return this.userRepository.findAll();
+    }
+
+    public User getUserByIdentificator(String identificator) {
+        return this.userRepository.getUserByIdentificator(identificator);
+    }
+
+    public Boolean checkCredentials(String password, UserCredentials credentials) {
+        return encoder.matches(password, credentials.hash());
+    }
+
+    public List<UserCredentials> getUserCredentialsByUserId (Integer userId) {
+        return this.userCredentialsRepository.findAllByUserId(userId);
     }
 }

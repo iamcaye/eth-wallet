@@ -7,3 +7,4 @@ services:
       - 'POSTGRES_USER=u_ethwallet'
     ports:
       - '5432:5432'
+    restart: 'unless-stopped'
